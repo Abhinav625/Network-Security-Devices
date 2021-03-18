@@ -73,6 +73,37 @@
             </div>
         </div>
     </div>
+	
+<div class="article-detail-card">
+	<div class="article-detail-card-header">
+		<h4 class="wolken-h4">Resolution</h4>
+</div>
+<div class="article-detail-card-content wolken-h5">
+	<p>
+	<span style="">Configuration changes are logged logged in "Configuration Change Events" (URL_Path /Eventlog/fetch=0x02000000).&nbsp;</span><br>
+	<span style="">This information can be found in Sysinfo (https://proxy-ip:8082/sysinfo).&nbsp;</span><br><br>
+	<span style="">Please see example below.</span><br><br><b style="">
+	<span style="font-size: 12px;">Configuration Change Events&nbsp;</span></b><br>
+<span style="font-size: 12px;"><b>URL_Path /Eventlog/fetch=0x02000000</b>&nbsp;</span><br>
+<span style="">2015-06-16 19:42:35+08:00SGT &nbsp;"Administrator action, user 'admin', from x.x.x.x', Viewed event log" &nbsp;0 60003:7D &nbsp; cag_agent.cpp:1467</span><br>
+<span style="">2015-06-16 19:43:27+08:00SGT &nbsp;"Administrator action, user 'admin', from x.x.x.x', Downloaded event log" &nbsp;0 60003:7D &nbsp; cag_agent.cpp:1467</span><br>
+<span style="">2015-06-17 11:34:59+08:00SGT &nbsp;"Config admin at A.B.C.D 'user1', added primary DNS server "8.8.8.8"" &nbsp;0 140002:7D &nbsp; cli_parse.hpp:268</span><br>
+<span style="">2015-06-17 13:07:49+08:00SGT &nbsp;"Config admin at E.F.G.H 'admin', installed new VPM Policy File and VPM XML File" &nbsp;0 140002:7D &nbsp; cli_parse.hpp:268</span><br>
+<span style="">2015-06-17 13:09:06+08:00SGT &nbsp;"Config admin at&nbsp;</span><span style="">E.F.G.H</span><span style="">&nbsp;'admin', installed new VPM Policy File and VPM XML File" &nbsp;0 140002:7D &nbsp; cli_parse.hpp:268</span><br>
+<br>
+<span style="">For information on the previous date, customer needs to access "Snapshot" part.&nbsp;</span><br>
+<b style="">https://proxy-ip:8082/diagnostics/snapshot&nbsp;</b><br>
+<span style="">Look at "Snapshot sysinfo:", and choose date, then go to part "Configuration Change Events" in the Snapshot Sysinfo.&nbsp;</span><br>
+<br>
+<u style=""><b>Limitation</b></u><br>
+<span style="">- The specifics of policy changes are not detailed here. Just that a user made a change.</span></p>
+
+<p><span style="">-The detailed changes made via VPM are not logged in Eventlog, the only message logged to Eventlog is:</span></p>
+
+<p>2015-06-17 13:09:06+08:00SGT &nbsp;"<strong>Config admin</strong> at&nbsp;E.F.G.H&nbsp;'admin', <strong>installed new VPM Policy File and VPM XML File</strong>" &nbsp;0 140002:7D &nbsp; cli_parse.hpp:268</p>
+
+                            </div>
+                        </div>
 	    
     <!-- Fixed footer -->
     <!--
