@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html><body><p>&#65279;
+
+</p>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="Linux filesystem">
+    <meta name="author" content="LinuxForLife.com">
+    <title>Bluecoat Proxy Concepts</title>
+    <link rel="icon" href="favicons/8458-img-favicon.ico">
+    <link href="css/css-bootstrap.min1.css" rel="stylesheet">
+    <link href="http://netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.css" rel="stylesheet">
+    <link rel="stylesheet" type="text/css" href="css/css-custom.css">
+
+
+    <div class="navbar navbar-inverse navbar-static-top" role="navigation">
+        <div class="container">
+            <div class="navbar-header">
+                <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+                    <span class="sr-only">Toggle navigation</span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                </button>
+                <a class="navbar-brand" href="index.html">Home</a>
+            </div>
+            <!-- <div class="navbar-collapse collapse"> -->
+                <!-- <ul class="nav navbar-nav"> -->
+                    <!-- <li><a href="index.html">Home</a></li> -->
+                    <!-- <li><a href="about.html">About</a></li> -->
+                <!-- </ul> -->
+            <!-- </div><!--/.nav-collapse --> -->
+        </div>
+    </div><!--navbar -->
+    <div class="row">
+        <div class="col-sm-2">
+            <div class="list-group">
+                <div class="list-group">
+                    <a class="list-group-item active" href="Bluecoat Proxy Concepts.html"><span class="fa fa-square"></span>&nbsp;Bluecoat Proxy Concepts</a>
+                    <a class="list-group-item " href="unix-history.html"><span class="fa fa-square"></span>&nbsp;Bluecoat Proxy Troubleshooting</a>
+                    <a class="list-group-item " href="unix-history.html"><span class="fa fa-square"></span>&nbsp;Bluecoat Proxy Commands</a>
+                 </div>
+            </div>
+        </div>
+        <!-- /.col-sm-3 -->
+        <div class="col-sm-8">
+            <!-- Example row of columns -->
+            <div class="row">
+                <div class="page-header">
+                    <h1>Checkpoint Useful Commands</h1>
+                </div>
+
+				<h3>Checkpoint Antispoofing Commands</h3>
+				<p>&nbsp;</p>
+                <h5><b>Checking Antispoofing on Security Gateway (Replace $1 with interface name)</b></h5>
+					<pre>ifconfig -a $1|grep -B 1 inet |grep encap| awk '{print $1}' | grep -v lo | grep -v ":" | grep -v ^lo | xargs -I % sh -c 'echo %;echo -n " VIP "; cphaprob -a if |grep %|grep -v U|grep -v D | cut -c16-| tr -d "\r\n" ;echo;echo -n " IP ";ifconfig % | grep "inet addr" | cut -d ":" -f 2 | cut -d " " -f 1;echo -n " Mask " ;ifconfig % | sed -rn "2s/ .*:(.*)$/\1/p";echo -en " ANTISPOOFING ENABLED:\t";more $FWDIR/state/local/FW1/local.set |grep -A 30 \(% | grep has_addr_info | cut -c17- | tr \) " " |sort -ng| uniq ; echo -en " ANTISPOOFING MODE:\t"; if [ `more $FWDIR/state/local/FW1/local.set |grep -A 30 \(% | grep monitor_only | cut -c16- | tr \) " " |sort -ng| uniq| grep -o false` ]; then echo "PREVENT"; else echo "DETECT"; fi; echo -en " ANTISPOOFING TOPO:\t"; if [ `more $FWDIR/state/local/FW1/local.set |grep -A 30 \(% | grep external | cut -c12- | tr \) " " |sort -ng| uniq| grep -o true` ]; then echo "External"; else echo "Internal"; fi;echo " ADDRESS SPOOFING NETWORKS:";more $FWDIR/state/local/FW1/local.set | grep -A 30 \(%|grep ": (\""|sort -ng| uniq |tr \(\)\<\>\:\" \ ;echo " "'</pre>
+
+                <p>&nbsp;</p>
+
+				<p><b>Checking Antispoofing on VSX Gateway</b></p>
+					<pre>echo; egrep -B1 $'ifindex|:ipaddr|\(\x22<[0-9]|has_addr_info|:monitor_only|:external' $FWDIR/state/local/FW1/local.set | sed 's/[\x22\t()<>]//g' | sed 's/--//g' | sed 'N;s/\n:ipaddr6/ IPv6/;P;D' | sed '/IPv6/!s/://g' | sed 's/interface_topology/\tCalculated Interface Topology/g' | sed '0,/ifindex 0/{/ifindex 0/d;}' | sed '/ifindex 0/q' | sed '/spoof\|scan/d' | sed 's/has_addr_info true/\tAddress Spoofing Protection: Enabled/g' | sed 's/has_addr_info false/\tAddress Spoofing Protection: Disabled/g' | sed -e '/Prot/{n;d}' | sed 'N;s/\nmonitor_only true/ (Detect Mode)/;P;D' | sed 'N;s/\nmonitor_only false/ (Prevent Mode)/;P;D' | sed 'N;s/\nexternal false/ - Internal Interface/;P;D' | sed 'N;s/\nexternal true/ - External Interface/;P;D' | tac | sed '/ifindex 0/I,+2 d' | sed '/Address/,$!d' | tac | sed '/ifindex/d' | sed 's/,/ -/g' | sed 'N;s/\nipaddr/ >/;P;D' | sed '/ - /s/^ /\t/' | egrep -C 9999 --color=auto $'>|IPv6|External|Disabled|Detect'</pre>
+
+					<p>&nbsp;</p>
+					
+					<h3>Checkpoint NAT Commands</h3> <p>&nbsp;</p>
+					
+					
+                <h5><b>To Display NAT Table</b></h5>
+					<pre>fw tab -t NAT_rules -u | awk '{print " " $1 " " $5 " " $6 " " $7 " " $8 " " $10}' | sed s'/.$//' | sed 's/../& /g' | awk 'BEGIN{IFS=OFS="\t"}NR==1{print $0}{for(i=1;i<=NF;i++) if(i!=NF){printf "%s%c",strtonum("0x"$i),"."}else{printf "%d\n",strtonum("0x"$i)}}' | awk 'BEGIN{FS=".";OFS="\t";n=5;printf "%-4s %-18s %-23s %-23s %-23s %s\n","Key","IP1","IP2","OSOURCE1","OSOURCE2","FinalDEST"}NR>=5{printf "%-4s %s.%s.%s.%-5s\t", $5,$7,$8,$9,$10; printf "%s.%s.%s.%-10s\t",$12,$13,$14,$15; printf "%s.%s.%s.%-11s\t",$17,$18,$19,$20; printf "%s.%s.%s.%-11s\t",$22,$23,$24,$25; printf "%s.%s.%s.%s",$27,$28,$29,$30; printf "\n";}'</pre>
+
+                <p>&nbsp;</p>
+                <h1>File paths</h1>
+                <p>A path is a sequence of nested directories with a file or directory at the end, separated by the / character</p>
+                <ul>
+                    <li>
+                        Relative path:
+                        <pre>
+$ documents/files/my_filwe.txt
+</pre>
+                        Relative to the current directory
+                    </li>
+                    <li>
+                        Absolute path:
+                        <pre>
+$ /home/pc_name/dir/file_abc.txt
+</pre>
+                    </li>
+                    <li>
+                        root directory.
+                        <pre>
+$ /
+</pre>
+                        Start of absolute paths for all files on the system (even for files on removable devices or network shared).
+                    </li>
+
+                </ul>
+                <p></p>
+                <p></p>
+                <p></p>
+                <p></p>
+                <p></p>
+                <p></p>
+
+                <p>&nbsp;</p>
+                <hr>
+
+
+
+
+
+            </div>
+        </div>
+
+
+    </div>
+    <!-- Fixed footer -->
+    <!--
+    To change this license header, choose License Headers in Project Properties.
+    To change this template file, choose Tools | Templates
+    and open the template in the editor.
+    -->
+    <script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-73773451-2', 'auto');
+  ga('send', 'pageview');
+
+    </script>
+
+    <div id="fb-root"></div>
+    <script>
+(function(d, s, id) {
+  var js, fjs = d.getElementsByTagName(s)[0];
+  if (d.getElementById(id)) return;
+  js = d.createElement(s); js.id = id;
+  js.src = "//connect.facebook.net/en_US/sdk.js#xfbml=1&version=v2.10";
+  fjs.parentNode.insertBefore(js, fjs);
+}(document, 'script', 'facebook-jssdk'));</script>
+    <!-- Bootstrap core JavaScript
+       ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+    <script src="js/1.11.0-jquery.min.js"></script>
+    <script src="js/77-js-bootstrap.min.js"></script>
+
+
+</body></html>
