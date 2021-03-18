@@ -51,11 +51,22 @@
                     <h1>Bluecoat Proxy Concepts</h1>
                 </div>
 
-				<h3>Checkpoint Antispoofing Commands</h3>
-				<p>&nbsp;</p>
-                <h5><b>Checking Antispoofing on Security Gateway (Replace $1 with interface name)</b></h5>
-					<pre>ifconfig -a $1|grep -B 1 inet |grep encap| awk '{print $1}' | grep -v lo | grep -v ":" | grep -v ^lo | xargs -I % sh -c 'echo %;echo -n " VIP "; cphaprob -a if |grep %|grep -v U|grep -v D | cut -c16-| tr -d "\r\n" ;echo;echo -n " IP ";ifconfig % | grep "inet addr" | cut -d ":" -f 2 | cut -d " " -f 1;echo -n " Mask " ;ifconfig % | sed -rn "2s/ .*:(.*)$/\1/p";echo -en " ANTISPOOFING ENABLED:\t";more $FWDIR/state/local/FW1/local.set |grep -A 30 \(% | grep has_addr_info | cut -c17- | tr \) " " |sort -ng| uniq ; echo -en " ANTISPOOFING MODE:\t"; if [ `more $FWDIR/state/local/FW1/local.set |grep -A 30 \(% | grep monitor_only | cut -c16- | tr \) " " |sort -ng| uniq| grep -o false` ]; then echo "PREVENT"; else echo "DETECT"; fi; echo -en " ANTISPOOFING TOPO:\t"; if [ `more $FWDIR/state/local/FW1/local.set |grep -A 30 \(% | grep external | cut -c12- | tr \) " " |sort -ng| uniq| grep -o true` ]; then echo "External"; else echo "Internal"; fi;echo " ADDRESS SPOOFING NETWORKS:";more $FWDIR/state/local/FW1/local.set | grep -A 30 \(%|grep ": (\""|sort -ng| uniq |tr \(\)\<\>\:\" \ ;echo " "'</pre>
-
+			<h3>Index</h3>
+			<p>&nbsp;</p>
+		<ul>
+  			<li>Checking logs on Bluecoat Proxy</li>
+  			<li>Tea</li>
+  			<li>Milk</li>
+		</ul>   
+		    
+                <h5><b>Checking logs on Bluecoat Proxy</b></h5>
+			<p>https://&lt;proxyhost&gt;:8082/eventlog/fetch=0xFFFFFFFF&nbsp;&nbsp;&nbsp;&nbsp; All Events</p>
+			<p>https://&lt;proxyhost&gt;:8082/eventlog/fetch=0x00000002&nbsp;&nbsp;&nbsp;&nbsp; Errors</p>
+			<p>https://&lt;proxyhost&gt;:8082/eventlog/fetch=0x00000003&nbsp;&nbsp;&nbsp;&nbsp; Priority 1 Events</p>
+		   	<p>https://&lt;proxyhost&gt;:8082/eventlog/fetch=0x00001000&nbsp;&nbsp;&nbsp;&nbsp; SSL</p>
+		    	<p>https://&lt;proxyhost&gt;:8082/eventlog/fetch=0x00008000&nbsp;&nbsp;&nbsp;&nbsp; Configuration Errors</p>
+		    	<p>https://&lt;proxyhost&gt;:8082/eventlog/fetch=0x02000000&nbsp;&nbsp;&nbsp;&nbsp; Configuration changes</p>
+		    	<p>https://&lt;proxyhost&gt;:8082/eventlog/fetch=0x10000000&nbsp;&nbsp;&nbsp;&nbsp; Download and Uploads (logs, BCWF, ...)</p>
                 <p>&nbsp;</p>
 
             </div>
